@@ -1,0 +1,8 @@
+{
+  "name": "tabris-app",
+  "description": " First Protoype of an TabrisJS App with Server-Client-functionality",
+  "main": "app.js",
+  "dependencies": {
+    "tabris": "latest"
+  }
+}

@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget
+    id="tabris_prototype"
+    version="1.0.0"
+    xmlns:gap="http://phonegap.com/ns/1.0"
+    xmlns="http://www.w3.org/ns/widgets"
+    xmlns:cdv="http://cordova.apache.org/ns/1.0">
+ 
+    <name>Tabris App</name>
+    <description>
+        First Protoype of an TabrisJS App with Server-Client-functionality
+    </description>
+    <author email="bepa1027@hs-karlsruhe.de" href="http://www.me.me">
+        PaBe
+    </author>
+ 
+    <access origin="*" />
+ 
+    <preference name="EnableDeveloperConsole" value="true"/>
+</widget>
