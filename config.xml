@@ -6,9 +6,9 @@
     xmlns="http://www.w3.org/ns/widgets"
     xmlns:cdv="http://cordova.apache.org/ns/1.0">
  
-    <name>My App</name>
+    <name>Tabris Prototype App</name>
     <description>
-        My first Tabris.js app
+        First Prototype for an app supporting a server-client communication
     </description>
     <author email="me@me.com" href="http://www.me.me">
         Me
