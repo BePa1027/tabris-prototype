@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget
-    id="tabris-prototype"
+    id="tabris.prototype"
     version="1.0.0"
     xmlns:gap="http://phonegap.com/ns/1.0"
     xmlns="http://www.w3.org/ns/widgets"
@@ -10,8 +10,8 @@
     <description>
         First Protoype of an TabrisJS App with Server-Client-functionality
     </description>
-    <author email="me@me.com" href="http://www.me.me">
-        Me
+    <author email="bepa1027@hs-karlsruhe.de" href="http://www.me.me">
+        PaBe
     </author>
  
     <access origin="*" />
