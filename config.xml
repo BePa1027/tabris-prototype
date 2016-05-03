@@ -1,17 +1,17 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget
-    id="tabris-prototype"
+    id="my.first.app"
     version="1.0.0"
     xmlns:gap="http://phonegap.com/ns/1.0"
     xmlns="http://www.w3.org/ns/widgets"
     xmlns:cdv="http://cordova.apache.org/ns/1.0">
  
-    <name>tabris-app<name>
+    <name>My App</name>
     <description>
-        First Protoype of an TabrisJS App with Server-Client-functionality
+        My first Tabris.js app
     </description>
-    <author email="bepa1027@hs-karlsruhe.de" href="http://www.me.me">
-        PaBe
+    <author email="me@me.com" href="http://www.me.me">
+        Me
     </author>
  
     <access origin="*" />
