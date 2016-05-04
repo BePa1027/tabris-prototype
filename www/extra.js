@@ -18,7 +18,7 @@ var textView = tabris.create("TextView", {
 var createImageView = function(scaleMode) {
   new tabris.ImageView({
     layoutData: {centerX: 0, top: [textView, 30], width: 300, height: 300},
-    image: {src: "./images/biatch.png"},
+    image: {src: "./images/hihi.png"},
     background: "white",
     scaleMode: scaleMode
   }).appendTo(page);
