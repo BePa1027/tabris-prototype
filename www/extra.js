@@ -24,17 +24,17 @@ var createImageView = function(scaleMode) {
   }).appendTo(page);
 };
 
-setInterval(function({
-	if(counter == 0){
-		page.set("background", "blue");
-	}
-	else if(counter == 1){
-		page.set("background", "green");
-	}
-	else if(counter == 2){
-		page.set("background", "red");
-	}
-}), 50)
+//setInterval(function({
+//	if(counter == 0){
+//		page.set("background", "blue");
+//	}
+//	else if(counter == 1){
+//		page.set("background", "green");
+//	}
+//	else if(counter == 2){
+//		page.set("background", "red");
+//	}
+//}), 50)
 
 
 createImageView("fit");
