@@ -10,7 +10,7 @@ var page = tabris.create("Page", {
 var textView = tabris.create("TextView", {
 	font: "30px",
 	layoutData: {left: 50, top: 30},
-	text: "Biatchhhh"
+	text: "wooooot"
 }).appendTo(page);
 
 
