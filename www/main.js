@@ -51,27 +51,34 @@ radioButtons.forEach(function(title){
   			message: "Enter URL and confirm"
 		}).on("accept", function(widget, text){
           
-          	// delete old textview if existent
+          	// dispose old textview if existent
           	if(urlTextView){
               urlTextView.dispose();
             }
           
 		  	var xhr = new tabris.XMLHttpRequest();
           	xhr.onreadystatechange = function() {
-		    if (xhr.readyState === xhr.DONE) {
-                            
-		      urlTextView = tabris.create("TextView", {
-		        layoutData: {left: 20, right: 20, top: "prev() 10"},
-		        text: JSON.parse(xhr.responseText)[1].join(", ")
-		      }).appendTo(page);
-		    }
-		  };
-		  xhr.open("GET", "http://en.wiktionary.org/w/api.php?action=opensearch&search=mobile&limit=100");
-		  xhr.send();
-        }).appendTo(page);
-        
-      }
-    }).appendTo(page);
+				if (xhr.readyState === xhr.DONE) {
+					if(xhr.status === 200) {
+						urlTextView = tabris.create("TextView", {
+						layoutData: {left: 20, right: 20, top: "prev() 10"},
+						text: JSON.parse(xhr.responseText)[1].join(", ")
+						//text: xhr.responseText
+						}).appendTo(page);
+					} else {
+						urlTextView = tabris.create("TextView",{
+						layoutData: {left: 20, right: 20, top: "prev() 10"},
+						text: "not OK, statuscode: " + xhr.status
+						}).appendTo(page);
+					}
+				}
+			};			
+			xhr.open("GET", "http://en.wiktionary.org/w/api.php?action=opensearch&search=mobile&limit=100");
+			//xhr.open("GET", "http://localhost:3000/posts/");
+			xhr.send();
+		}).appendTo(page);
+	  }
+	}).appendTo(page);
 });
  
 page.open();

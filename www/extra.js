@@ -1,4 +1,4 @@
-// Sexy //////////////////////////////////////////////////////
+// extra //////////////////////////////////////////////////////
 
 var counter = 0;
 
@@ -7,17 +7,15 @@ var page = tabris.create("Page", {
   topLevel: true
 });
 
-var textView = tabris.create("TextView", {
-	font: "30px",
-	layoutData: {left: 50, top: 30},
-	text: "wooooot"
+var tabFolder = new tabris.TabFolder({
+  layoutData: {left: 0, top: 0, right: 0, bottom: 0},
+  paging: true // enables swiping. To still be able to open the developer console in iOS, swipe from the bottom right.
 }).appendTo(page);
-
 
 
 var createImageView = function(scaleMode) {
   new tabris.ImageView({
-    layoutData: {centerX: 0, top: [textView, 30], width: 300, height: 300},
+    layoutData: {centerX: 0, centerY: 0, width: 300, height: 300},
     image: {src: "./images/hihi.png"},
     background: "white",
     scaleMode: scaleMode
@@ -43,5 +41,6 @@ setInterval(function(){
 	}
 },50);
 
-
 createImageView("fit");
+
+
