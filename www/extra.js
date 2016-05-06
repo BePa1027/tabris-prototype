@@ -3,7 +3,7 @@
 var counter = 0;
 
 var page = tabris.create("Page", {
-  title: "Miss Bechtold",
+  title: "Leo vor der OP",
   topLevel: true
 });
 
