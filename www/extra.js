@@ -3,7 +3,7 @@
 var counter = 0;
 
 var page = tabris.create("Page", {
-  title: "Miss Leopold",
+  title: "Extra",
   topLevel: true
 });
 
