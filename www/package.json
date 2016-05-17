@@ -7,6 +7,6 @@
     "cordova-plugin-bluetooth-serial": "latest",
 	"cordova-plugin-bluetoothle": "latest",
 	"cordova-plugin-ble-central": "latest",
-    "tabris": "latest"
+    "tabris": "1.7.0"
   }
 }
