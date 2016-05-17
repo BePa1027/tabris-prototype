@@ -153,16 +153,17 @@ bleScanButton = tabris.create("Button", {
 	};
 	
 	bluetoothle.startScan(function(success){
-			console.log("startScanSuccess: " + success.status);
+			console.log(success.status);
 		}, function(error){
-			console.log("startScanError: " + error.status);
+			console.log(error.status);
+			throw new Error("Initialize / Enable Bluetooth first!");
 		}, scanParams);
 	
 	setTimeout(function(){
 		bluetoothle.stopScan(function(success){
-			console.log("stopScanSuccess: " + success.status);
+			console.log(success.status);
 		}, function(error){
-			console.log("stopScanError: " + error.status);
+			console.log(error.status);
 		});
 	}, 6000);
 	
