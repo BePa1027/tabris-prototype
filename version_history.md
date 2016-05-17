@@ -6,5 +6,10 @@
 	* The received data will be displayed as text
 	* The received data can be visualized by the chart.js-plugin, creating a bar, line or radar chart
 	
+<<<<<<< HEAD
 * v1.0.1a - May 17, 2016
 	* Working on the Bluetooth functionality using "Cordova-plugin-bluetoothle"
+=======
+* v1.0.1b - May 17, 2016
+	* Working on the Bluetooth functionality using "Cordova-plugin-ble-central"
+>>>>>>> 7ed019eac4a870330177087b9466bd3f16aa684c

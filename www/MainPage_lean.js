@@ -89,6 +89,7 @@ bleEnableButton = tabris.create("Button", {
 	layoutData: {left: 10, top: 10}
 }).on("select", function(){
 	
+<<<<<<< HEAD
 	var initParams = {
 		"request": true,
 		"statusReceiver": false,
@@ -110,10 +111,19 @@ bleDisableButton = tabris.create("Button", {
 }).on("select", function(){
 	
 	bluetoothle.disable(function(success){;}, function(error){;});
+=======
+	// enables bluetooth on the device
+	ble.enable(function(){ 
+		console.log("Bluetooth enabled");
+	}, function(){
+		console.log("Error, Bluetooth not enabled");
+	});
+>>>>>>> 7ed019eac4a870330177087b9466bd3f16aa684c
 	
 }).appendTo(bluetooth_tab);
 
 bleScanButton = tabris.create("Button", {
+<<<<<<< HEAD
 	text: "Scan for BLE Devices",
 	textColor: "white",
 	background: "red",
@@ -157,6 +167,39 @@ bleScanButton = tabris.create("Button", {
 	
 }).appendTo(bluetooth_tab);
 
+=======
+		text: "Scan",
+		textColor: "white",
+		background: "red",
+		layoutData: {right: 10, top: 10}
+}).on("select", function(){
+	// check wheter the bluetooth is enabled
+	ble.isEnabled(function(){ // ... enabled
+		
+		console.log("Start Scanning for BLE Devices...");
+		
+		ble.startScan([], function(success) {
+			//console.log("name: " + success.name);
+			console.log("asdf");
+		}, function(failure){
+			console.log("Error while scanning: " + failure);
+		});
+		
+		setTimeout(ble.stopScan,
+			10000,
+			function() { console.log("Scan complete"); },
+			function() { console.log("stopScan failed"); }
+		);
+		
+	}, function(){ // ... not enabled
+		// error log TODO: ADD SMALL ERROR WINDOW 
+		console.log("Error, activate Bluetooth first!");
+	})
+}).appendTo(bluetooth_tab);
+
+
+
+>>>>>>> 7ed019eac4a870330177087b9466bd3f16aa684c
 // actions on tab change
 tabFolder.on("change:selection", function(widget, tab) {
 	if(tab.name == "HTTP"){
