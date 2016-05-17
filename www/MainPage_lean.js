@@ -95,9 +95,17 @@ bleEnableButton = tabris.create("Button", {
 		"restoreKey" : "bluetoothleplugin"
 	};
 	
-	bluetoothle.initialize(function(success){;}, function(error){;}, initParams);
+	bluetoothle.initialize(function(success){
+		;
+	}, function(error){
+		;
+	}, initParams);
 	
-	bluetoothle.enable(function(success){;}, function(error){;});
+	bluetoothle.enable(function(success){
+		;
+	}, function(error){
+		;
+	});
 	
 	
 }).appendTo(bluetooth_tab);
@@ -109,7 +117,11 @@ bleDisableButton = tabris.create("Button", {
 	layoutData: {right: 10, top: 10}
 }).on("select", function(){
 	
-	bluetoothle.disable(function(success){;}, function(error){;});
+	bluetoothle.disable(function(success){
+		;
+	}, function(error){
+		;
+	});
 	
 }).appendTo(bluetooth_tab);
 
