@@ -82,20 +82,53 @@ urlInput = new tabris.TextInput({  // show url input field
 }).appendTo(http_tab);
 
 // Bluetooth functionality _______________________________________________________________________________________________
-bleButton = tabris.create("Button", {
-	text: "Initialize Bluetooth",
+bleEnableButton = tabris.create("Button", {
+	text: "Enable Bluetooth",
 	textColor: "white",
 	background: "red",
-	layoutData: {centerX: 0, centerY: 0}
+	layoutData: {left: 10, top: 10}
 }).on("select", function(){
 	
-	var success, error, parameters;
-	
-	bluetoothle.initialize(success, error, parameters);
-	
-	console.log("success: " + success + "\n" + "error: " + error + "\n" + "parameters " + parameters);
+	// enables bluetooth on the device
+	ble.enable(function(){ 
+		console.log("Bluetooth enabled");
+	}, function(){
+		console.log("Error, Bluetooth not enabled");
+	});
 	
 }).appendTo(bluetooth_tab);
+
+bleScanButton = tabris.create("Button", {
+		text: "Scan",
+		textColor: "white",
+		background: "red",
+		layoutData: {right: 10, top: 10}
+}).on("select", function(){
+	// check wheter the bluetooth is enabled
+	ble.isEnabled(function(){ // ... enabled
+		
+		console.log("Start Scanning for BLE Devices...");
+		
+		ble.startScan([], function(success) {
+			//console.log("name: " + success.name);
+			console.log("asdf");
+		}, function(failure){
+			console.log("Error while scanning: " + failure);
+		});
+		
+		setTimeout(ble.stopScan,
+			10000,
+			function() { console.log("Scan complete"); },
+			function() { console.log("stopScan failed"); }
+		);
+		
+	}, function(){ // ... not enabled
+		// error log TODO: ADD SMALL ERROR WINDOW 
+		console.log("Error, activate Bluetooth first!");
+	})
+}).appendTo(bluetooth_tab);
+
+
 
 // actions on tab change
 tabFolder.on("change:selection", function(widget, tab) {
@@ -108,6 +141,7 @@ tabFolder.on("change:selection", function(widget, tab) {
 });
 
 page.open();
+
 
 var displayData=function(responseData, topWidgetObject){  // Data Management
 	// create a variable to save the received object data
