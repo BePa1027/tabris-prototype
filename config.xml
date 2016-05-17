@@ -17,8 +17,4 @@
     <access origin="*" />
  
     <preference name="EnableDeveloperConsole" value="true"/>
-<<<<<<< HEAD
 </widget>
-=======
-</widget>
->>>>>>> 7ed019eac4a870330177087b9466bd3f16aa684c
