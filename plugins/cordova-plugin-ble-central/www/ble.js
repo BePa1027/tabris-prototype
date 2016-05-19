@@ -26,7 +26,6 @@ var stringToArrayBuffer = function(str) {
 
 var base64ToArrayBuffer = function(b64) {
     return stringToArrayBuffer(atob(b64));
-    //return stringToArrayBuffer(new Buffer(b64, 'base64').toString(););
 };
 
 function massageMessageNativeToJs(message) {
