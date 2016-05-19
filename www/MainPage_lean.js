@@ -46,16 +46,8 @@ urlInput = new tabris.TextInput({  // show url input field
 	text: "http://192.168.178.30:8080/db.json"
 }).on("accept", function(widget, address){
 	
-	if(dataScrollView){ 			// dispose existing UI-elements (scrollView, Buttons...)
-		dataScrollView.dispose();
-		dataScrollView = 0;
-	}
-	if(composite){
-		composite.dispose();
-	}
-	if(statusText){
-		statusText.dispose();
-	}
+	// dispose global widgets
+	disposeGlobalWidgets();
 
 	var xhr = new tabris.XMLHttpRequest();  // create XMLHttpRequest
 	
@@ -87,50 +79,31 @@ urlInput = new tabris.TextInput({  // show url input field
 // Bluetooth functionality _______________________________________________________________________________________________
 
 var bleEnableButton = tabris.create("Button", {
-	text: "Scan for Devices",
+	text: "Scan Devices",
 	textColor: "white",
 	background: "red",
 	layoutData: {left: MARGIN, top: MARGIN}
 }).on("select", function(){
 	
 	// dispose widgets
-	if(collectionView){
-		collectionView.dispose();
-	}
-	if(btGetDataButton){
-		btGetDataButton.dispose();
-	}
-	if(waitingText){
-		waitingText.dispose();
-	}
-	if(composite){
-		composite.dispose();
-	}
-	if(dataScrollView){
-		dataScrollView.dispose();
-		dataScrollView = 0;
-	}
+	disposeGlobalWidgets();
 	
-	// waiting text ...
-	waitingText = new tabris.TextView({
-		layoutData: {centerX: 0, top: [bleEnableButton, 10]},
-		text: "Scanning for unpaired devices..."
-	}).appendTo(bluetooth_tab);
+	bluetoothSerial.isEnabled(function(){
+		
+		// waiting text ...
+		waitingText = new tabris.TextView({
+			layoutData: {centerX: 0, top: [bleEnableButton, 10]},
+			text: "Scanning for unpaired devices..."
+		}).appendTo(bluetooth_tab);
 	
-	// enables bluetooth on the device
-	bluetoothSerial.enable(function(){ 
-		console.log("Bluetooth enabled");
-		console.log("Scanning for unpaired devices...");
-	}, function(){
-		console.log("Error, Bluetooth not enabled");
-	});
 	
-	// discover unpaired bluetooth devices
-	bluetoothSerial.discoverUnpaired(function(devices) {
+		// discover unpaired bluetooth devices
+		bluetoothSerial.discoverUnpaired(function(devices) {
 		
 		// disconnect any established connections
 		bluetoothSerial.disconnect();
 		
+		// log the devices found
 		console.log(devices.length + " Device(s) found!\n\n");
 		
 		// update waitingText if no devices could be found
@@ -138,18 +111,20 @@ var bleEnableButton = tabris.create("Button", {
 			waitingText.set("text", "No devices found, try again!");
 		}
 		else{
-			// dispose the waiting text etc
+			// dispose the waiting text
 			waitingText.dispose();
 		}
 		
+		// device variable
 		var scannedDevices = [];
 		
+		// parse all devices found
 		devices.forEach(function(device, i) {
 			console.log("name: " + device.name + "\nID: " + device.id);
 			scannedDevices[i] = [device.name, device.id]; // this means: scannedDevices[i][0] = name etc.
 		})
 		
-		
+		// create a collectionView for the devices found
 		collectionView = new tabris.CollectionView({
 			layoutData: {left: MARGIN, top: [bleEnableButton, 10], right: MARGIN, bottom: MARGIN},
 			items: scannedDevices,
@@ -170,7 +145,7 @@ var bleEnableButton = tabris.create("Button", {
 					idView.set("text", "ID:\t" + item[1]);
 				});	  
 			}
-		}).on("select", function(target, value) {
+		}).on("select", function(target, value) { // if a collection view is selected...
 			
 			console.log("selected ", value);
 			
@@ -189,6 +164,9 @@ var bleEnableButton = tabris.create("Button", {
 					background: "red",
 					layoutData: {top: MARGIN, right: MARGIN}
 				}).on("select", function(){
+				
+					// dispose global widgets, except the btGetDataButton
+					disposeGlobalWidgets("btGetDataButton");
 					
 					// read data from buffer
 					bluetoothSerial.read(function(data){
@@ -197,7 +175,12 @@ var bleEnableButton = tabris.create("Button", {
 						console.log(data);
 						
 						// display the data in a scrollview
-						displayData(data, btGetDataButton, bluetooth_tab); // call the display fcn
+						if(displayData(data, btGetDataButton, bluetooth_tab) == -1){
+							waitingText = new tabris.TextView({
+								layoutData: {centerX: 0, top: [bleEnableButton, 10]},
+								text: "Error reading data!"
+							}).appendTo(bluetooth_tab);
+						}
 						
 					}, function(failure){
 						console.log("Error reading data from " + value[0]);
@@ -213,8 +196,26 @@ var bleEnableButton = tabris.create("Button", {
 		
 		}, function(){
 			;// failure
-	});
+		});
+	}, function(){ // if not enabled
 	
+		// dispose existing global widgets
+		disposeGlobalWidgets();
+	
+		// enables bluetooth on the device
+		bluetoothSerial.enable(function(){ 
+			console.log("Bluetooth enabled");
+			
+			// waiting text ...
+			waitingText = new tabris.TextView({
+				layoutData: {centerX: 0, top: [bleEnableButton, 10]},
+				text: "Bluetooth enabled! Push the Scan Button again!"
+			}).appendTo(bluetooth_tab);
+			
+		}, function(){
+			console.log("Error, Bluetooth not enabled");
+		});
+	});
 }).appendTo(bluetooth_tab);
 
 // actions on tab change
@@ -230,6 +231,7 @@ tabFolder.on("change:selection", function(widget, tab) {
 page.open();
 
 
+// Display Data functionality _______________________________________________________________________________________________
 var displayData=function(responseData, topWidgetObject, tabToAppendTo){  // Data Management
 
 	var receivedData = 0;
@@ -241,7 +243,7 @@ var displayData=function(responseData, topWidgetObject, tabToAppendTo){  // Data
 	catch(error){
 		console.log("Error parsing the received data: " + error);
 		// throw an error ??!! HOWWW???!!
-		return;
+		return -1;
 	}
 	
 	var stringData = "";
@@ -297,6 +299,7 @@ var displayData=function(responseData, topWidgetObject, tabToAppendTo){  // Data
 	});
 }
 
+// Create Chart functionality _______________________________________________________________________________________________
 function createChart(receivedData, chartType){  // Chart
 	var Chart = require("./node_modules/chart.js/Chart.min.js");	
 	
@@ -347,4 +350,33 @@ function createChart(receivedData, chartType){  // Chart
 	}).appendTo(visuPage);
 
 	visuPage.open();
+}
+
+// Dispose Global Widgets _______________________________________________________________________________________________
+function disposeGlobalWidgets(exception){
+	
+	if(!exception){
+		var exception = 0;
+	}
+	
+	// dispose widgets
+	if(collectionView && exception != "collectionView"){
+		collectionView.dispose();
+	}
+	if(btGetDataButton && exception != "btGetDataButton"){
+		btGetDataButton.dispose();
+	}
+	if(waitingText && exception != "waitingText"){
+		waitingText.dispose();
+	}
+	if(composite && exception != "composite"){
+		composite.dispose();
+	}
+	if(dataScrollView && exception != "dataScrollView"){
+		dataScrollView.dispose();
+		dataScrollView = 0;
+	}
+	if(statusText && exception != "statusText"){
+		statusText.dispose();
+	}
 }
