@@ -235,9 +235,13 @@ function connectToDevice(adress, name){
 		var name = "unknown device";
 	}
 	
+	window.plugins.toast.showShortCenter("Connecting to " + name);
+	
 	// connect to the choosen device
 	bluetoothSerial.connect(adress, function(success){
 		console.log("Connection to " + name + " successful!");
+		
+		window.plugins.toast.showShortCenter("Connected to " + name);
 		
 		if(collectionView){	// dispose the collectionView
 			collectionView.dispose();
