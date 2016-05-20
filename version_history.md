@@ -8,5 +8,7 @@
 	
 * v1.0.1 - May 17, 2016
 	* Bluetooth functionality using "cordova-plugin-bluetooth-serial" is working, requires a communication partner with the possibility to transmit via a serial port
+	* Manual connection to a serial device via MAC Address / UUID possible
+	* Scanning possible to find unpaired devices and connect to such a device
 	
 

@@ -78,147 +78,218 @@ urlInput = new tabris.TextInput({  // show url input field
 
 // Bluetooth functionality _______________________________________________________________________________________________
 
-var bleEnableButton = tabris.create("Button", {
-	text: "Scan Devices",
-	textColor: "white",
-	background: "red",
-	layoutData: {left: MARGIN, top: MARGIN}
-}).on("select", function(){
-	
-	// dispose widgets
-	disposeGlobalWidgets();
-	
-	bluetoothSerial.isEnabled(function(){
-		
-		// waiting text ...
-		waitingText = new tabris.TextView({
-			layoutData: {centerX: 0, top: [bleEnableButton, 10]},
-			text: "Scanning for unpaired devices..."
-		}).appendTo(bluetooth_tab);
-	
-	
-		// discover unpaired bluetooth devices
-		bluetoothSerial.discoverUnpaired(function(devices) {
-		
-		// disconnect any established connections
-		bluetoothSerial.disconnect();
-		
-		// log the devices found
-		console.log(devices.length + " Device(s) found!\n\n");
-		
-		// update waitingText if no devices could be found
-		if(devices.length < 1){
-			waitingText.set("text", "No devices found, try again!");
-		}
-		else{
-			// dispose the waiting text
-			waitingText.dispose();
-		}
-		
-		// device variable
-		var scannedDevices = [];
-		
-		// parse all devices found
-		devices.forEach(function(device, i) {
-			console.log("name: " + device.name + "\nID: " + device.id);
-			scannedDevices[i] = [device.name, device.id]; // this means: scannedDevices[i][0] = name etc.
-		})
-		
-		// create a collectionView for the devices found
-		collectionView = new tabris.CollectionView({
-			layoutData: {left: MARGIN, top: [bleEnableButton, 10], right: MARGIN, bottom: MARGIN},
-			items: scannedDevices,
-			itemHeight: 75,
-			initializeCell: function(cell){
-				var nameView = new tabris.TextView({
-					// layoutData: {left: 20, top: [bleEnableButton, 20], right: 20},
-					layoutData: {left: MARGIN, top: MARGIN / 4},
-					background: "#cecece",
-					alignment: "center"
-				}).appendTo(cell);
-				var idView = new tabris.TextView({
-					layoutData: {left: MARGIN, top: [nameView, MARGIN / 4]},
-					alignment: "center"
-				}).appendTo(cell);
-				cell.on("change:item", function(widget, item){
-					nameView.set("text", "Name:\t" + item[0]);
-					idView.set("text", "ID:\t" + item[1]);
-				});	  
-			}
-		}).on("select", function(target, value) { // if a collection view is selected...
+var btRadioButtons =  ["Scan for Devices", "Enter MAC / UUID"];
+var bleEnableButton = 0;
+var macInput = 0;
+
+btRadioButtons.forEach(function(title) {
+  new tabris.RadioButton({
+    layoutData: {left: 10, top: "prev() 10", height: 20},
+    text: title
+  }).on("change:selection", function(widget, selection) {
+		if (widget.get("text") == "Scan for Devices") {
 			
-			console.log("selected ", value);
+			// dispose global widgets
+			disposeGlobalWidgets("bleEnableButton");
 			
-			// connect to the choosen device
-			bluetoothSerial.connect(value[1], function(success){
-				console.log("Connection to " + value[0] + " successful!");
+			bluetoothSerial.enable(function(){
+				bluetoothSerial.isEnabled(function(){
+					scanBluetoothConnection();
+				}, function(){
+					;
+				})
+			}, function(){
+				console.log("Couldn't enable Bluetooth!");
+			});			
+			
+		}
+		else if(widget.get("text") == "Enter MAC / UUID"){
+			
+			disposeGlobalWidgets();
+			
+			bluetoothSerial.enable(function(){
+				bluetoothSerial.isEnabled(function(){
+					manualBluetoothConnection();
+				}, function(){
+					;
+				})
+			}, function(){
+				console.log("Couldn't enable Bluetooth!");
+			});			
+		}
+	
+	}).appendTo(bluetooth_tab);
+});
+
+// scan bt functionality with collectionView ___________
+function scanBluetoothConnection(){
+
+	// Scan button incl. functionality
+	bleEnableButton = tabris.create("Button", {
+		text: "Scan",
+		textColor: "white",
+		background: "red",
+		layoutData: {right: MARGIN, top: MARGIN}
+	}).on("select", function(){
+		
+		// dispose widgets
+		disposeGlobalWidgets("bleEnableButton");
+		
+		bluetoothSerial.isEnabled(function(){
+				// waiting text ...
+			waitingText = new tabris.TextView({
+				layoutData: {centerX: 0, centerY: 0},
+				text: "Scanning for unpaired devices..."
+			}).appendTo(bluetooth_tab);
+			
+			
+			// discover unpaired bluetooth devices
+			bluetoothSerial.discoverUnpaired(function(devices) {
+			
+				// disconnect any established connections
+				bluetoothSerial.disconnect();
 				
-				// dispose the collectionView
-				collectionView.dispose();
+				// log the devices found
+				console.log(devices.length + " Device(s) found!\n\n");
 				
-				// get data button
-				btGetDataButton = new tabris.Button({
-					//text: "Read Data from " + value[0],
-					text: "Read Data",
-					textColor: "white",
-					background: "red",
-					layoutData: {top: MARGIN, right: MARGIN}
-				}).on("select", function(){
+				// update waitingText if no devices could be found
+				if(devices.length < 1){
+					waitingText.set("text", "No devices found, try again!");
+				}
+				else{
+					// dispose the waiting text
+					waitingText.dispose();
+				}
 				
-					// dispose global widgets, except the btGetDataButton
-					disposeGlobalWidgets("btGetDataButton");
+				// device variable
+				var scannedDevices = [];
+				
+				// parse all devices found
+				devices.forEach(function(device, i) {
+					console.log("name: " + device.name + "\nID: " + device.id);
+					scannedDevices[i] = [device.name, device.id]; // this means: scannedDevices[i][0] = name etc.
+				})
+				
+				// create a collectionView for the devices found
+				collectionView = new tabris.CollectionView({
+					layoutData: {left: MARGIN, top: [bleEnableButton, 10], right: MARGIN, bottom: MARGIN},
+					items: scannedDevices,
+					itemHeight: 75,
+					initializeCell: function(cell){
+						var nameView = new tabris.TextView({
+							// layoutData: {left: 20, top: [bleEnableButton, 20], right: 20},
+							layoutData: {left: MARGIN, top: MARGIN / 4},
+							background: "#cecece",
+							alignment: "center"
+						}).appendTo(cell);
+						var idView = new tabris.TextView({
+							layoutData: {left: MARGIN, top: [nameView, MARGIN / 4]},
+							alignment: "center"
+						}).appendTo(cell);
+						cell.on("change:item", function(widget, item){
+							nameView.set("text", "Name:\t" + item[0]);
+							idView.set("text", "ID:\t" + item[1]);
+						});	  
+					}
+				}).on("select", function(target, value) { 
 					
-					// read data from buffer
-					bluetoothSerial.read(function(data){
-						
-						// log the received data
-						console.log(data);
-						
-						// display the data in a scrollview
-						if(displayData(data, btGetDataButton, bluetooth_tab) == -1){
-							waitingText = new tabris.TextView({
-								layoutData: {centerX: 0, top: [bleEnableButton, 10]},
-								text: "Error reading data!"
-							}).appendTo(bluetooth_tab);
-						}
-						
-					}, function(failure){
-						console.log("Error reading data from " + value[0]);
-					});
+					// outsourced function to connect to a device and reading its data
+					connectToDevice(value[1], value[0]);
 					
 				}).appendTo(bluetooth_tab);
+			
+			}, function(){
+				;// failure
+			});
+		}, function(){
+			waitingText = new tabris.TextView({
+				layoutData: {centerX: 0, centerY: 0},
+				text: "Bluetooth isn't enabled! Activate it first!"
+			}).appendTo(bluetooth_tab);
+		});
+		
+	}).appendTo(bluetooth_tab);
+	
+}
+
+// mac address / uuid  bt functionality ________________
+function manualBluetoothConnection(){
+	macInput = new tabris.TextInput({  // show mac / uuid input field
+		layoutData: {top: "prev() 10", left: 10, right: 10},
+		message: "Enter MAC Adress or UUID",
+		text: "48:D7:05:BB:2B:0E"
+	}).on("accept", function(widget, address){
+	
+		connectToDevice(address, address);
+	
+	}).appendTo(bluetooth_tab);
+}
+
+// connect to a bluetooth device______________________
+function connectToDevice(adress, name){
+	
+	if(!adress){
+		return -1;
+	}
+	if(!name){
+		var name = "unknown device";
+	}
+	
+	// connect to the choosen device
+	bluetoothSerial.connect(adress, function(success){
+		console.log("Connection to " + name + " successful!");
+		
+		if(collectionView){	// dispose the collectionView
+			collectionView.dispose();
+		}
+		if(bleEnableButton){ // dispose the scan button
+			bleEnableButton.dispose();
+		}
+		if(macInput){ // dispose the macInput textInput
+			macInput.dispose();
+		}
+		
+		// get data button
+		btGetDataButton = new tabris.Button({
+			//text: "Read Data from " + value[0],
+			text: "Read Data",
+			textColor: "white",
+			background: "red",
+			layoutData: {top: MARGIN, right: MARGIN}
+		}).on("select", function(){
+		
+			// dispose global widgets, except the btGetDataButton
+			disposeGlobalWidgets("btGetDataButton");
+			
+			// read data from buffer
+			bluetoothSerial.read(function(data){
+				
+				// log the received data
+				console.log(data);
+				
+				// display the data in a scrollview
+				if(displayData(data, btGetDataButton, bluetooth_tab) == -1){
+					waitingText = new tabris.TextView({
+						layoutData: {centerX: 0, centerY: 0},
+						text: "Error reading data!"
+					}).appendTo(bluetooth_tab);
+				}
 				
 			}, function(failure){
-				console.log("Connection to " + value[0] + " failed!");
+				console.log("Error reading data from " + name);
 			});
 			
 		}).appendTo(bluetooth_tab);
 		
-		}, function(){
-			;// failure
-		});
-	}, function(){ // if not enabled
-	
-		// dispose existing global widgets
-		disposeGlobalWidgets();
-	
-		// enables bluetooth on the device
-		bluetoothSerial.enable(function(){ 
-			console.log("Bluetooth enabled");
-			
-			// waiting text ...
-			waitingText = new tabris.TextView({
-				layoutData: {centerX: 0, top: [bleEnableButton, 10]},
-				text: "Bluetooth enabled! Push the Scan Button again!"
-			}).appendTo(bluetooth_tab);
-			
-		}, function(){
-			console.log("Error, Bluetooth not enabled");
-		});
+	}, function(failure){
+		console.log("Connection to " + name + " failed!");
 	});
-}).appendTo(bluetooth_tab);
+	
+	return 1;
+}
 
-// actions on tab change
+
+// actions on tab change_____________________________________________________________________________________________________
 tabFolder.on("change:selection", function(widget, tab) {
 	if(tab.name == "HTTP"){
     	
@@ -297,6 +368,8 @@ var displayData=function(responseData, topWidgetObject, tabToAppendTo){  // Data
 		// create a chart, offering the received data 
 		createChart(receivedData, chartPicker.get("selection"));
 	});
+	
+	return 1;
 }
 
 // Create Chart functionality _______________________________________________________________________________________________
@@ -378,5 +451,11 @@ function disposeGlobalWidgets(exception){
 	}
 	if(statusText && exception != "statusText"){
 		statusText.dispose();
+	}
+	if(macInput && exception != "urlInput"){
+		macInput.dispose();
+	}
+	if(bleEnableButton && exception != "bleEnableButton"){
+		bleEnableButton.dispose();
 	}
 }
